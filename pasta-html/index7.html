@@ -1,94 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Power Dance 2025</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: rgba(0, 0, 2, 0);
-        }
-
+        body { margin: 0; padding: 0; background-color: transparent !important; overflow: hidden; }
         #fd {
-            height: 160px;
-            width: 750px;
-            background-color: rgba(0, 0, 5, 0);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 150%;
-            overflow: hidden;
-            /* Garante que o conteúdo fora do contêiner não seja exibido */
-            position: relative;
-            display: flex;
-            align-items: center;
-            /* Centraliza o conteúdo verticalmente */
-            justify-content: center;
-            /* Centraliza o conteúdo horizontalmente */
+            height: 160px; width: 100%; max-width: 360px;
+            position: relative; display: flex; align-items: center;
+            overflow: hidden; border-bottom: 2px solid #ffcc00;
         }
-
-        #dança {
-            margin: 0%;
-            padding: 0%;
-            width: 340px;
-            height: 280px;
-            background-color: rgba(243, 9, 212, 0);
-           
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 90%;
-            overflow: hidden;
-            /* Garante que o conteúdo fora do contêiner não seja exibido */
-            position: relative;
-            display: flex;
-            margin-top: 13px;
-        }
-
         .scrolling-text {
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-            /* Garante que o texto não quebre linhas */
-            position: absolute;
-            animation: scroll 48s linear infinite;
-            /* Animação para rolar o conteúdo */
-            font-size: 40px;
-            color: white;
-            text-shadow: 1px 5px 5px #06e92b;
+            white-space: nowrap; position: absolute;
+            animation: scroll 18s linear infinite; 
+            font-size: 26px; color: #ffffff;
+            font-family: 'Arial', sans-serif; font-weight: bold;
+            text-shadow: 0 0 8px #06e92b, 0 0 15px #06e92b;
         }
-
-        .MRQ {
-            width: 100px;
-            height: 100px;
-            margin-left: 20px;
-        }
-
-        @keyframes scroll {
-            from {
-                transform: translateX(100%);
-                /* Começa fora do contêiner, à direita */
-            }
-            to {
-                transform: translateX(-100%);
-                /* Sai fora do contêiner, à esquerda */
-            }
-        }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     </style>
 </head>
-
 <body>
     <div id="fd">
-        <div id="dança"></div>
-        <div class="scrolling-text">
-            <h1>
-                &nbsp;&nbsp;&nbsp; POWER DANCE:&nbsp;&nbsp; AQUI&nbsp;&nbsp; É&nbsp; SEM&nbsp; BLÁ-BLÁ-BLÁ,&nbsp;&nbsp;&nbsp; &nbsp;PORQUE &nbsp;&nbsp;&nbsp;O&nbsp;&nbsp; SOM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; É &nbsp;&nbsp;&nbsp; PARA&nbsp; CURTIR&nbsp; E &nbsp;&nbsp;&nbsp;DANÇAR&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp; &nbsp;&nbsp; MÚSICAS,&nbsp; &nbsp;SEM &nbsp;FALAÇÃO.&nbsp;&nbsp; AS &nbsp;MAIS&nbsp; PEDIDAS,&nbsp;&nbsp; QUE&nbsp; TOCA &nbsp;&nbsp;FUNDO &nbsp;E&nbsp; MEXEM&nbsp; COM&nbsp; A &nbsp;EMOÇÃO.&nbsp;&nbsp; DE&nbsp; VOLTA&nbsp;
-                AO&nbsp; PASSADO!
-            </h1>
+        <div id="display-text" class="scrolling-text">
+            POWER DANCE NO AR  SEMPRE  COM VOCÊ, A FESTA NÃO PARA! - POWER DANCE SEMPRE CONECTADO   COM VOCÊ,  NA BATIDADO FLASH BACK , PORQUE AQUI A FESTA NÃO PARA!
         </div>
     </div>
-</body>
 
+    <script>
+        // Escuta a mensagem enviada pelo script pai (o app principal)
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.bairro) {
+                const display = document.getElementById('display-text');
+                // Exibe o bairro filtrado
+                display.innerText = "LOCALIZAÇÃO: " + event.data.bairro.toUpperCase();
+            }
+        });
+    </script>
+</body>
 </html>

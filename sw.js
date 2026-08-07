@@ -1,10 +1,10 @@
-const CACHE_NAME = 'powerdance-v8'; // Aumentamos para v8 para forçar a atualização e limpar o bug anterior
+const CACHE_NAME = 'powerdance-v9'; // Atualizado para v9 para forçar a renovação do cache
 
-// Lista limpa com o que realmente existe na raiz do seu projeto atual
+// Lista de arquivos estáticos da aplicação
 const ASSETS = [
     '/',
     '/index.html',
-    '/image/fav-icon.ico', // Adicionado aqui para o Service Worker carregar em cache
+    '/image/fav-icon.ico',
     '/landing.html',
     '/play.html',
     '/manifest.json',
@@ -26,13 +26,11 @@ const ASSETS = [
     '/vu7.jpg'
 ];
 
-
-
-// Instalação do Service Worker e Cache dos arquivos
+// Instalação do Service Worker
 self.addEventListener('install', (e) => {
+  self.skipWaiting(); // Força o novo Service Worker a ativar imediatamente
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Usamos um mapeamento para carregar os arquivos e evitar que um erro isole o PWA inteiro
       return Promise.all(
         ASSETS.map((url) => {
           return cache.add(url).catch((err) => {
@@ -55,12 +53,29 @@ self.addEventListener('activate', (e) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim()) // Assume o controle das páginas abertas na hora
   );
 });
 
-// Estratégia de Cache: Serve o cache primeiro, se falhar busca na rede
+// Gerenciamento de Requisições (Fetch)
 self.addEventListener('fetch', (e) => {
+  const url = e.request.url;
+
+  // 1. Ignora requisições que não usam método GET (POST, PUT, DELETE)
+  if (e.request.method !== 'GET') return;
+
+  // 2. EXCEÇÃO DE STREAMING E APIs: Deixa o navegador buscar direto na rede
+  if (
+    url.includes('radio.mp3') || 
+    url.includes('erbj.com.br') || 
+    url.includes('metadapower.vercel.app') ||
+    url.includes('firebaseio.com') ||
+    url.endsWith('.mp3')
+  ) {
+    return; // Não intercepta pelo Service Worker
+  }
+
+  // 3. Estratégia Cache First para arquivos locais (HTML, CSS, JS, Imagens)
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       return cachedResponse || fetch(e.request);

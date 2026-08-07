@@ -108,35 +108,36 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
-        const apiURL = 'https://erbj.com.br/api/nowplaying/power_dance';
+        const novaRadioUrl = 'http://voxhd.com.br/api-json/Nzg5NCsx';
+        const vercelProxy = 'https://metadapower.vercel.app/api/player?url=';
+        const apiURL = vercelProxy + novaRadioUrl;
 
         function isValidUrl(url) {
-            try {
-                new URL(url);
-                return url.startsWith('http://') || url.startsWith('https://');
-            } catch (e) { return false; }
-        }
+          try {
+             new URL(url);
+               return url.startsWith('http://') || url.startsWith('https://');
+           } catch (e) { return false; }
+     }
 
-        function atualizarInfo() {
-            $.getJSON(apiURL)
-                .done(function(data) {
-                    let artista = "WEB RADIO POWER DANCE";
-                    let titulo = "Campo Grande MS";
-                    let genero = "Dance";
-                    let capa = "";
+      function atualizarInfo() {
+           $.getJSON(apiURL)
+               .done(function(data) {
+               let musica = "WEB RADIO POWER DANCE - Campo Grande MS";
+                  if (data && data.musica_atual) { musica = String(data.musica_atual); }
 
-                    if (data && data.now_playing && data.now_playing.song) {
-                        const song = data.now_playing.song;
-                        artista = song.artist || "WEB RADIO POWER DANCE";
-                        titulo = song.title || "Campo Grande MS";
-                        capa = song.art || "";
-                    }
+                 let artista = "WEB RADIO POWER DANCE";
+                 let titulo = "Campo Grande MS";
 
-                    if (data && data.station && data.station.genre) {
-                        genero = data.station.genre;
-                    }
+               if (musica.includes(" - ")) {
+                      const partes = musica.split(" - ");
+                      artista = partes[0] ? partes[0].trim() : artista;
+                 titulo = partes[1] ? partes[1].trim() : titulo;
+              } else { artista = musica; }
 
-                    const infoHtml = `
+             const genero = data.genero || "Sem gênero";
+                const capa = data.capa_musica;
+
+              const infoHtml = `
                         <i class="fa-solid fa-microphone"></i> ${artista} &nbsp;&nbsp;
                         <i class="fa-solid fa-music"></i> ${titulo} &nbsp;&nbsp;
                         <i class="fa-solid fa-headphones"></i> ${genero} &nbsp;&nbsp;
@@ -158,7 +159,8 @@
                     }
                 })
                 .fail(function() {
-                    $('#infoText').html(`<i class="fa-solid fa-headphones"></i> WEB RADIO POWER DANCE Campo Grande MS`);
+                    $('#infoText').html(`<i class="fa-solid fa-exclamation-triangle"></i> Conexão indisponível ou erro no Proxy API.`);
+           ///         $('#coverImage').fadeOut(450, function() { $(this).attr('src', './logodj.gif').fadeIn(450); });
                 });
         }
 

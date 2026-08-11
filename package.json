@@ -1,0 +1,25 @@
+{
+  "name": "power-dance-2027",
+  "version": "1.0.0",
+  "description": "API de geolocalização para Rádio Power Dance",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erbj50/power-dance-2026.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/erbj50/power-dance-2026/issues"
+  },
+  "homepage": "https://github.com/erbj50/power-dance-2026#readme",
+  "dependencies": {
+    "axios": "^1.19.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

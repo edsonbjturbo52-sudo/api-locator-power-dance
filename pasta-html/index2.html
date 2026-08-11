@@ -11,8 +11,8 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Garante zero barras de rolagem */
-            background-color: transparent;
+            overflow: hidden;
+            background-color: transparent !important;
         }
 
         #fd {
@@ -31,12 +31,11 @@
             align-items: center;
             white-space: nowrap;
             position: absolute;
-            animation: scroll 18s linear infinite;
+            animation: scroll 25s linear infinite; /* Animação suave */
             color: white;
             text-shadow: 1px 5px 5px #e40707;
         }
 
-        /* Reseta a margem padrão do h1 para não estourar a altura */
         .scrolling-text h1 {
             margin: 0;
             font-size: 40px;
@@ -48,16 +47,12 @@
             width: 100px;
             height: 100px;
             margin: 0 20px;
-            vertical-align: middle; /* Centraliza a imagem com o texto */
+            vertical-align: middle;
         }
 
         @keyframes scroll {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(-100%);
-            }
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
         }
     </style>
 </head>
@@ -66,7 +61,7 @@
     <div id="fd">
         <div class="scrolling-text">
             <h1>
-                POWER&nbsp; DANCE&nbsp; 2026&nbsp;&nbsp;
+                POWER&nbsp; DANCE&nbsp; 2027&nbsp;&nbsp;
                 <img class="mrq" src="../image/log-rotate.gif" alt="Logo Rotativo">&nbsp;&nbsp;
                 <span id="texto-dinamico">LIGADO DE: LOCALIZANDO...</span>&nbsp;&nbsp;
                 <img class="mrq" src="../image/log-rotate.gif" alt="Logo Rotativo">&nbsp;&nbsp;
@@ -76,31 +71,72 @@
     </div>
 
     <script>
-        async function buscarLocalizacao() {
+        const CHAVE_CACHE = 'power_dance_localizacao_cache';
+        const TEMPO_CACHE_MS = 30 * 60 * 1000; // Guarda a memória local por 30 minutos
+
+        // Função para formatar e exibir a mensagem 2 VEZES no letreiro
+        function exibirMensagemDupla(dados) {
             const elementoLocal = document.getElementById('texto-dinamico');
             
-            try {
-                // URL da sua API no Render
-                const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
-                const dados = await resposta.json();
+            const cidade = dados.cidade.toUpperCase();
+            const uf = dados.uf.toUpperCase();
+            const bairro = dados.bairro ? dados.bairro.toUpperCase() : '';
+            const hora = dados.horario || '';
 
-                if (dados.cidade && dados.uf) {
-                    const cidade = dados.cidade.toUpperCase();
-                    const uf = dados.uf.toUpperCase();
+            // Texto individual
+            const textoBase = `OUVINDO DE: ${cidade} - ${uf} | ${bairro} | CONECTADO ÀS ${hora}`;
+
+            // Exibe o texto 2 VEZES na mesma rodada com espaçamento
+            elementoLocal.innerHTML = `${textoBase} &nbsp;&nbsp;&nbsp; 🔥 &nbsp;&nbsp;&nbsp; ${textoBase}`;
+        }
+
+        async function carregarLocalizacao() {
+            const elementoLocal = document.getElementById('texto-dinamico');
+            
+            // 1. TENTA LER DA MEMÓRIA LOCAL PRIMEIRO (INSTANTÂNEO)
+            const cacheSalvo = localStorage.getItem(CHAVE_CACHE);
+            if (cacheSalvo) {
+                try {
+                    const cacheObj = JSON.parse(cacheSalvo);
+                    const agora = new Date().getTime();
+
+                    // Se o cache tiver menos de 30 minutos, exibe na hora!
+                    if (agora - cacheObj.timestamp < TEMPO_CACHE_MS) {
+                        exibirMensagemDupla(cacheObj.dados);
+                    }
+                } catch (e) {
+                    console.warn("Erro ao ler cache local:", e);
+                }
+            }
+
+            // 2. CONSULTA A API NO RENDER PARA ATUALIZAR
+            try {
+                const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
+                if (resposta.ok) {
+                    const dados = await resposta.json();
                     
-                    elementoLocal.innerText = `OUVINDO DE: ${cidade} - ${uf}`;
-                } else {
-                    elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                    if (dados.cidade) {
+                        // Atualiza a tela com o texto duplo
+                        exibirMensagemDupla(dados);
+
+                        // Salva na memória local com a hora atual
+                        const novoCache = {
+                            timestamp: new Date().getTime(),
+                            dados: dados
+                        };
+                        localStorage.setItem(CHAVE_CACHE, JSON.stringify(novoCache));
+                    }
                 }
             } catch (erro) {
-                console.error('Erro ao buscar localização:', erro);
-                elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                console.warn('Servidor indisponível no momento, usando versão padrão ou cache anterior.');
+                if (!cacheSalvo) {
+                    elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                }
             }
         }
 
-        window.addEventListener('DOMContentLoaded', buscarLocalizacao);
+        window.addEventListener('DOMContentLoaded', carregarLocalizacao);
     </script>
 </body>
-
 
 </html>

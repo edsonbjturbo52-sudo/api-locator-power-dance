@@ -6,24 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Power Dance 2026</title>
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            background-color: rgba(0, 0, 2, 0);
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: transparent !important;
         }
 
         #fd {
-            height: 160px;
-            width: 750px;
-            background-color: rgba(34, 34, 225, 0);
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 150%;
-            overflow: hidden;
-            position: relative;
-            display: flex;
+            height: 160px; 
+            width: 100%; 
+            max-width: 995px;
+            position: relative; 
+            display: flex; 
             align-items: center;
-            justify-content: center;
+            overflow: hidden; 
+            border-bottom: 2px solid #ffcc0000;
         }
 
         .scrolling-text {
@@ -31,26 +31,28 @@
             align-items: center;
             white-space: nowrap;
             position: absolute;
-            animation: scroll 18s linear infinite;
-            font-size: 40px;
+            animation: scroll 25s linear infinite; /* Animação suave */
             color: white;
             text-shadow: 1px 5px 5px #e40707;
+        }
+
+        .scrolling-text h1 {
+            margin: 0;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
         }
 
         .mrq {
             width: 100px;
             height: 100px;
-            margin-left: 20px;
-            margin-right: 20px;
+            margin: 0 20px;
+            vertical-align: middle;
         }
 
         @keyframes scroll {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(-100%);
-            }
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
         }
     </style>
 </head>
@@ -59,7 +61,7 @@
     <div id="fd">
         <div class="scrolling-text">
             <h1>
-                POWER&nbsp; DANCE&nbsp; 2026&nbsp;&nbsp;
+                POWER&nbsp; DANCE&nbsp; 2027&nbsp;&nbsp;
                 <img class="mrq" src="../image/log-rotate.gif" alt="Logo Rotativo">&nbsp;&nbsp;
                 <span id="texto-dinamico">LIGADO DE: LOCALIZANDO...</span>&nbsp;&nbsp;
                 <img class="mrq" src="../image/log-rotate.gif" alt="Logo Rotativo">&nbsp;&nbsp;
@@ -69,29 +71,71 @@
     </div>
 
     <script>
-        async function buscarLocalizacao() {
+        const CHAVE_CACHE = 'power_dance_localizacao_cache';
+        const TEMPO_CACHE_MS = 30 * 60 * 1000; // Guarda a memória local por 30 minutos
+
+        // Função para formatar e exibir a mensagem 2 VEZES no letreiro
+        function exibirMensagemDupla(dados) {
             const elementoLocal = document.getElementById('texto-dinamico');
             
-            try {
-                // URL apontando para a sua API no Render referente ao repositório power-dance-2026
-                const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
-                const dados = await resposta.json();
+            const cidade = dados.cidade.toUpperCase();
+            const uf = dados.uf.toUpperCase();
+            const bairro = dados.bairro ? dados.bairro.toUpperCase() : '';
+            const hora = dados.horario || '';
 
-                if (dados.cidade && dados.uf) {
-                    const cidade = dados.cidade.toUpperCase();
-                    const uf = dados.uf.toUpperCase();
+            // Texto individual
+            const textoBase = `OUVINDO DE: ${cidade} - ${uf} | ${bairro} | CONECTADO ÀS ${hora}`;
+
+            // Exibe o texto 2 VEZES na mesma rodada com espaçamento
+            elementoLocal.innerHTML = `${textoBase} &nbsp;&nbsp;&nbsp; 🔥 &nbsp;&nbsp;&nbsp; ${textoBase}`;
+        }
+
+        async function carregarLocalizacao() {
+            const elementoLocal = document.getElementById('texto-dinamico');
+            
+            // 1. TENTA LER DA MEMÓRIA LOCAL PRIMEIRO (INSTANTÂNEO)
+            const cacheSalvo = localStorage.getItem(CHAVE_CACHE);
+            if (cacheSalvo) {
+                try {
+                    const cacheObj = JSON.parse(cacheSalvo);
+                    const agora = new Date().getTime();
+
+                    // Se o cache tiver menos de 30 minutos, exibe na hora!
+                    if (agora - cacheObj.timestamp < TEMPO_CACHE_MS) {
+                        exibirMensagemDupla(cacheObj.dados);
+                    }
+                } catch (e) {
+                    console.warn("Erro ao ler cache local:", e);
+                }
+            }
+
+            // 2. CONSULTA A API NO RENDER PARA ATUALIZAR
+            try {
+                const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
+                if (resposta.ok) {
+                    const dados = await resposta.json();
                     
-                    elementoLocal.innerText = `OUVINDO DE: ${cidade} - ${uf}`;
-                } else {
-                    elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                    if (dados.cidade) {
+                        // Atualiza a tela com o texto duplo
+                        exibirMensagemDupla(dados);
+
+                        // Salva na memória local com a hora atual
+                        const novoCache = {
+                            timestamp: new Date().getTime(),
+                            dados: dados
+                        };
+                        localStorage.setItem(CHAVE_CACHE, JSON.stringify(novoCache));
+                    }
                 }
             } catch (erro) {
-                console.error('Erro ao buscar localização:', erro);
-                elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                console.warn('Servidor indisponível no momento, usando versão padrão ou cache anterior.');
+                if (!cacheSalvo) {
+                    elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                }
             }
         }
 
-        window.addEventListener('DOMContentLoaded', buscarLocalizacao);
+        window.addEventListener('DOMContentLoaded', carregarLocalizacao);
     </script>
 </body>
 

@@ -47,7 +47,7 @@ app.get('/api/localizacao', async (req, res) => {
 
     console.log(`[OUVINTE CONECTADO] ${dadosLocalizacao.cidade}/${dadosLocalizacao.uf} às ${dadosLocalizacao.horario}`);
 
-    res.json(dadosLocalizacao);
+     res.json(dadosLocalizacao);
   } catch (error) {
     console.error('[ERRO NA API]:', error.message);
     res.status(500).json({ erro: 'Erro interno ao consultar localização' });

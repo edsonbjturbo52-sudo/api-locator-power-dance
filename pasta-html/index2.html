@@ -6,15 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Power Dance 2026</title>
     <style>
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            background-color: rgba(0, 0, 2, 0);
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Garante zero barras de rolagem */
+            background-color: transparent;
         }
-  #fd {
-            height: 160px; width: 100%; max-width: 995px;
-            position: relative; display: flex; align-items: center;
-            overflow: hidden; border-bottom: 2px solid #ffcc0000;
+
+        #fd {
+            height: 160px; 
+            width: 100%; 
+            max-width: 995px;
+            position: relative; 
+            display: flex; 
+            align-items: center;
+            overflow: hidden; 
+            border-bottom: 2px solid #ffcc0000;
         }
 
         .scrolling-text {
@@ -23,16 +32,23 @@
             white-space: nowrap;
             position: absolute;
             animation: scroll 18s linear infinite;
-            font-size: 40px;
             color: white;
             text-shadow: 1px 5px 5px #e40707;
+        }
+
+        /* Reseta a margem padrão do h1 para não estourar a altura */
+        .scrolling-text h1 {
+            margin: 0;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
         }
 
         .mrq {
             width: 100px;
             height: 100px;
-            margin-left: 20px;
-            margin-right: 20px;
+            margin: 0 20px;
+            vertical-align: middle; /* Centraliza a imagem com o texto */
         }
 
         @keyframes scroll {
@@ -64,7 +80,7 @@
             const elementoLocal = document.getElementById('texto-dinamico');
             
             try {
-                // URL apontando para a sua API no Render referente ao repositório power-dance-2026
+                // URL da sua API no Render
                 const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
                 const dados = await resposta.json();
 
@@ -85,5 +101,6 @@
         window.addEventListener('DOMContentLoaded', buscarLocalizacao);
     </script>
 </body>
+
 
 </html>

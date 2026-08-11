@@ -74,7 +74,7 @@
             
             try {
                 // URL apontando para a sua API no Render referente ao repositório power-dance-2026
-                const resposta = await fetch('https://power-dance-2026.onrender.com/api/localizacao');
+                const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
                 const dados = await resposta.json();
 
                 if (dados.cidade && dados.uf) {

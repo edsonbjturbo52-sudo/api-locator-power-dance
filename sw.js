@@ -4,6 +4,8 @@ const CACHE_NAME = 'powerdance-v9'; // Atualizado para v9 para for√ßar a renova√
 const ASSETS = [
     '/',
     '/index.html',
+    '/index2.html',
+    '/index6.html',
     '/image/fav-icon.ico',
     '/landing.html',
     '/play.html',

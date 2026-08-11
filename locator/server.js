@@ -3,66 +3,55 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
-
-// Permite requisições de qualquer origem (seu player web)
 app.use(cors());
 
-// Rota principal de geolocalização do ouvinte
 app.get('/api/localizacao', async (req, res) => {
   try {
-    // Captura o IP real considerando Cloudflare, proxies do Render e conexões diretas
     let clientIp = 
       req.headers['cf-connecting-ip'] || 
       req.headers['x-forwarded-for'] || 
       req.socket.remoteAddress || 
       '';
 
-    // Se houver múltiplos IPs na cadeia (proxy), pega o primeiro (IP do cliente)
-    if (clientIp.includes(',')) {
-      clientIp = clientIp.split(',')[0].trim();
-    }
-
-    // Limpa o prefixo IPv6 em ambientes híbridos (ex: ::ffff:189.10.20.30 -> 189.10.20.30)
-    if (clientIp.startsWith('::ffff:')) {
-      clientIp = clientIp.replace('::ffff:', '');
-    }
-
-    // Se estiver testando localmente (localhost), usa um IP público para simular
+    if (clientIp.includes(',')) clientIp = clientIp.split(',')[0].trim();
+    if (clientIp.startsWith('::ffff:')) clientIp = clientIp.replace('::ffff:', '');
     if (clientIp === '::1' || clientIp === '127.0.0.1' || !clientIp) {
-      clientIp = '8.8.8.8';
+      clientIp = '177.1.222.220'; // IP de testes (Campo Grande)
     }
 
-    // Consulta a API de geolocalização com limite de tempo de 5 segundos
-    const response = await axios.get(`http://ip-api.com/json/${clientIp}?lang=pt-BR`, {
-      timeout: 5000
-    });
+    // Consulta geolocalização por IP
+    const response = await axios.get(`http://ip-api.com/json/${clientIp}?lang=pt-BR`, { timeout: 5000 });
 
     if (response.data.status === 'fail') {
-      console.warn(`[AVISO] Falha ao localizar o IP: ${clientIp}`);
       return res.status(400).json({ erro: 'Não foi possível localizar este IP' });
     }
 
+    // Gerar horário local formatado (Horário de Brasília / Região)
+    const agora = new Date();
+    const horarioFormatado = agora.toLocaleTimeString('pt-BR', { 
+      timeZone: 'America/Campo_Grande', // Ajuste a fuso se necessário
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
+
+    // Monta o JSON completo solicitado
     const dadosLocalizacao = {
-      cidade: response.data.city || 'Desconhecida',
-      estado: response.data.regionName || 'Desconhecido',
-      uf: response.data.region || '',
+      bairro: response.data.zip ? `Região CEP ${response.data.zip}` : 'Centro / Região Geral',
+      cidade: response.data.city || 'Campo Grande',
+      estado: response.data.regionName || 'Mato Grosso do Sul',
+      uf: response.data.region || 'MS',
       pais: response.data.country || 'Brasil',
-      ip: clientIp
+      horario: horarioFormatado
     };
 
-    // REGISTRA NO PAINEL DE LOGS DO RENDER TODA VEZ QUE ALGUÉM ACESSA
-    console.log(`[OUVINTE CONECTADO] ${dadosLocalizacao.cidade}/${dadosLocalizacao.uf} | IP: ${clientIp}`);
+    console.log(`[OUVINTE CONECTADO] ${dadosLocalizacao.cidade}/${dadosLocalizacao.uf} às ${dadosLocalizacao.horario}`);
 
     res.json(dadosLocalizacao);
   } catch (error) {
     console.error('[ERRO NA API]:', error.message);
     res.status(500).json({ erro: 'Erro interno ao consultar localização' });
   }
-});
-
-// Rota inicial de verificação de status (Health Check)
-app.get('/', (req, res) => {
-  res.send('API Rádio Power Dance ativa e operacional! 🎧🔥');
 });
 
 const PORT = process.env.PORT || 3000;

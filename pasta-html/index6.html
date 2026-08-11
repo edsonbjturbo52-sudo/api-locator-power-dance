@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Dance 2026</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0, 0, 2, 0);
+        }
+
+        #fd {
+            height: 160px;
+            width: 750px;
+            background-color: rgba(0, 0, 5, 0);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 150%;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scrolling-text {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            position: absolute;
+            animation: scroll 18s linear infinite;
+            font-size: 40px;
+            color: white;
+            text-shadow: 1px 5px 5px #e40707;
+        }
+
+        .mrq {
+            width: 100px;
+            height: 100px;
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        @keyframes scroll {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="fd">
+        <div class="scrolling-text">
+            <h1>
+                POWER&nbsp; DANCE&nbsp; 2026&nbsp;&nbsp;
+                <img class="mrq" src="../image/log-rotate.gif" alt="Logo Rotativo">&nbsp;&nbsp;
+                <span id="texto-dinamico">LIGADO DE: LOCALIZANDO...</span>&nbsp;&nbsp;
+                <img class="mrq" src="../image/log-rotate.gif" alt="Logo Rotativo">&nbsp;&nbsp;
+                DJ&nbsp; ROBERT&nbsp; BJ&nbsp; NO&nbsp; COMANDO&nbsp; DA&nbsp; EMOÇÃO!!
+            </h1>
+        </div>
+    </div>
+
+    <script>
+        async function buscarLocalizacao() {
+            const elementoLocal = document.getElementById('texto-dinamico');
+            
+            try {
+                // URL apontando para a sua API no Render referente ao repositório power-dance-2026
+                const resposta = await fetch('https://api-locator-power-dance.onrender.com/api/localizacao');
+                const dados = await resposta.json();
+
+                if (dados.cidade && dados.uf) {
+                    const cidade = dados.cidade.toUpperCase();
+                    const uf = dados.uf.toUpperCase();
+                    
+                    elementoLocal.innerText = `OUVINDO DE: ${cidade} - ${uf}`;
+                } else {
+                    elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+                }
+            } catch (erro) {
+                console.error('Erro ao buscar localização:', erro);
+                elementoLocal.innerText = `LIGADO NA MELHOR PROGRAMAÇÃO`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', buscarLocalizacao);
+    </script>
+</body>
+
+</html>

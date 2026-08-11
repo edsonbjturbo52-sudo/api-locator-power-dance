@@ -1,10 +1,10 @@
 {
-  "name": "power-dance-2027",
+  "name": "power-dance-2026",
   "version": "1.0.0",
   "description": "API de geolocalização para Rádio Power Dance",
-  "main": "server.js",
+  "main": "locator/server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node locator/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

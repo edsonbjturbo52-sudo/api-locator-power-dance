@@ -56,7 +56,7 @@
     }
     .message .content {
       margin-left: 150px;
-      font-size: 42px;
+      font-size: 32px;
       word-wrap: break-word;
       white-space: pre-wrap;
     }
@@ -126,7 +126,7 @@
       cursor: not-allowed;
     }
 
-    /* POP-UP ESTILO WHATSAPP (TELA CHEIA TRANSPARENTE) */
+    /* MODAL DE EMOJIS ESTILO WHATSAPP */
     .emoji-picker-modal {
       display: none;
       position: fixed;
@@ -152,7 +152,6 @@
       flex-direction: column;
       border-top: 2px solid #00a884;
       box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
-     
     }
     .emoji-picker-header {
       display: flex;
@@ -241,14 +240,13 @@
   
   <div class="footer">
     <div class="input-row">
-      <!-- Botão de Carinha Sorrindo (Estilo WhatsApp) -->
       <button type="button" class="emoji-trigger-btn" id="openEmojiModal" title="Escolher Emoji">😀</button>
-      <textarea id="messageInput" placeholder="Ex: !pedir Nome da Musica..." maxlength="150" disabled></textarea>
+      <textarea id="messageInput" placeholder="Ex: !Double You - Please Don't Go" maxlength="150" disabled></textarea>
       <button id="submitMessage" class="send-btn" disabled>Enviar</button>
     </div>
   </div>
 
-  <!-- MODAL / POP-UP DE EMOJIS COMPLETO ESTILO WHATSAPP -->
+  <!-- POP-UP DE EMOJIS COMPLETO ESTILO WHATSAPP -->
   <div class="emoji-picker-modal" id="emojiModal">
     <div class="emoji-picker-content">
       <div class="emoji-picker-header">
@@ -282,23 +280,20 @@
     const auth = getAuth(app);
     const database = getDatabase(app);
 
-    const ADMIN_EMAIL = "seuemailadmin@gmail.com";
-
     const bannedWords = [
       "seu negro", "mito", "MITO", "prostituta", "viado", "boiola", "bolsonaro", "ladrao", "talarico", "ruim", "pessimo", "péssimo", "paia", "bosta", "rola", "pica", "lixo", "zona", "sertanejo", "forró", "axé", "pagode", "baile", "funk", "foda", "buceta", "piroca", "jeba", "bonde", "roubo", "roubar", "assaltar", "estrupar", "estrupador", "traficante", "petista", "safado", "invasor", "traveco", "piranha", "biscate", "satanas", "diabo", "ateo", "atoa", "vagal", "cú", "cu", "bunda", "rabo", "rabão", "boasuda", "pix", "92", "93", "9", "67", "22", "refrigeração", "ar", "serviços", "mao", "mão", "pé", "salão", "mecanica",
       "oficina", "3", "negro", "piscina", "cade", "cade?", "deve", "paga", "ladrão", "lula", "Lula",
       "vadia", "janja", "jamja", "egoista", "cac", "nikolas", "esquerda", "direita", "mecânica", "bucetuda","gozar", "bosta", "merda", "cocô", "cagada", "cagado", "cagadao", "arrombado", "mercado", "chiqueiro", "http://", "https://","siga", "sigam", "sigam-me"
     ];
 
-    // BANCO COMPLETO DE EMOJIS CATEGORIZADOS (WHATSAPP STYLE)
     const emojiCategories = {
       "😀": ["😀","😃","😄","😁","😆","😅","😂","🤣","🥲","☺️","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😝","😜","🤪","🤨","🧐","🤓","😎","🥸","🤩","🥳","😏","😒","😞","😔","😟","😕","🙁","☹️","😣","😖","😫","😩","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🤗","🤔","🤭","🤫","🤥","😶","😐","😑","😬","🙄","😯","😦","😧","😮","😲","🥱","😴","🤤","😪","😵","🤐","🥴","🤢","🤮","🤧","😷","🤒","🤕"],
       "👋": ["👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦵","🦿","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷","🦴","👀","👁️","👅","👄"],
       "❤️": ["❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","☮️","✝️","☪️","🕉️","☸️","✡️","🔯","🕎","☯️","☦️","🛐","⛎","♈️","♉️","♊️","♋️","♌️","♍️","♎️","♏️","🏹","♑️","♒️","♓️","🆔","⚛️"],
-      "🚗": ["🚗","🚕","🚙","🚌","🏣","🛻","🚚","🚛","🚜","🏎️","🏎","🏍️","🛵","🛺","🚲","🛴","🚏","🛣️","🛤️","🛢️","⛽","🚨","🚥","🚦","🛑","🚧","⚓","⛵","🛶","🚤","🛳️","⚙️","🚁","🛸","🚀","🛰️","💺"],
+      "🚗": ["🚗","🚕","🚙","🚌","🏣","🛻","🚚","🚛","🚜","🏎️","🏎","🏍️","🛵","🛺","🚲","🛴","🚏","🛣️","🛤️","🛢️","⛽","🚨","🚥","🚦","🛑","🚧","⚓","⛵","canoe","🚤","🛳️","⚙️","🚁","🛸","🚀","🛰️","💺"],
       "🏠": ["🏠","🏡","🏫","🏢","🏣","🏥","🏦","🏨","🏪","🏫","🏬","🏭","🏰","🏯","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","🕋","⛲","⛺","🌁","🌃","🏙️","🌄","🌅","🌆","🌇","🌉","♨️"],
-      "🛏️": ["🛏️","🛋️","🚿","🛁","🚽","🔑","🗝️","🚪","🪑","💡","🔦","🏮","🧱","🗿","🧳","⌛","⏳","⌚","⏰","🎈","🎉","🎊","🎋","🎍","🎎","🎏","🎐","🎑","🎟️","🎫","🎖️","🏆","🏅","🥇","🥈","🥉","⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","🏑","🥍","🏏","🪃","🥅","⛳","🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷","⛸️","🥌","🎿","⛷️","🏂"],
-      "🎵": ["🎵","🎶","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🎲","🎯","🎳","🎮","🎰","🧩","🎧","🎤","🎙️","📻","📺","📷","📸","📹","📼","🔍","🔎","🕯️","💡","🔦"]
+      "🛏️": ["🛏️","🛋️","🚿","🛁","toilet","🔑","🗝️","🚪","🪑","💡","🔦","🏮","🧱","🗿","🧳","⌛","⏳","⌚","⏰","🎈","🎉","🎊","🎋","🎍","🎎","🎏","🎐","🎑","🎟️","🎫","🎖️","🏆","🏅","🥇","🥈","🥉","⚽","🏀","🏈","⚾","🥎","tennis","🏐","rugby","🥏","🎱","🪀","pingpong","badminton","hockey","fieldhockey","lacrosse","cricket","boomerang","goal","golf","kite","bow","fishing","scuba","boxing","martialarts","running","skate","roller","sled","iceSkate","curling","ski","snowboard"],
+      "🎵": ["🎵","🎶","🎼","🎹","🥁","🎷","🎺","🎸","🪕","violin","🎲","darts","bowling","game","slot","puzzle","headphones","mic","studio","radio","tv","camera","flash","video","tape","search","search2","candle","light","torch"]
     };
 
     let messages = [];
@@ -316,7 +311,6 @@
         .replace(/onerror/gi, "");
     }
 
-    // LÓGICA DO MODAL DE EMOJIS
     const emojiModal = document.getElementById('emojiModal');
     const openEmojiModal = document.getElementById('openEmojiModal');
     const closeEmojiModal = document.getElementById('closeEmojiModal');
@@ -324,7 +318,6 @@
     const emojiGrid = document.getElementById('emojiGrid');
     const messageInput = document.getElementById('messageInput');
 
-    // Inicializa as Abas do Modal
     Object.keys(emojiCategories).forEach((catIcon, index) => {
       const tabBtn = document.createElement('button');
       tabBtn.type = 'button';
@@ -354,7 +347,6 @@
       });
     }
 
-    // Carrega a primeira categoria por padrão
     carregarEmojisCategoria("😀");
 
     openEmojiModal.addEventListener('click', () => {
@@ -380,22 +372,6 @@
       }
     });
 
-    async function jaPediuHoje(uid) {
-      const hoje = new Date().toISOString().split('T')[0];
-      const pedidosRef = ref(database, 'pedidos_bot');
-      const snapshot = await get(pedidosRef);
-      
-      if (!snapshot.exists()) return false;
-
-      const pedidos = snapshot.val();
-      for (let id in pedidos) {
-        if (pedidos[id].uid === uid && pedidos[id].data === hoje) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     document.getElementById('submitMessage').addEventListener('click', async () => {
       let text = messageInput.value.trim();
       const user = auth.currentUser;
@@ -415,45 +391,7 @@
         return;
       }
 
-      const ePedido = text.startsWith("!");
-      
-      if (ePedido) {
-        const comandoValido = text.toLowerCase().startsWith("!pedir") || text.toLowerCase().startsWith("!pedido");
-        if (!comandoValido) {
-          alert("Comando inválido! Use !pedir [nome da música] para fazer o seu pedido.");
-          return;
-        }
-
-        const eAdmin = user.email === ADMIN_EMAIL;
-        
-        if (!eAdmin) {
-          const jaPediu = await jaPediuHoje(user.uid);
-          if (jaPediu) {
-            alert("VOCÊ JÁ FEZ UM PEDIDO HOJE! Pode pedir 1 música por dia. Volte amanhã!");
-            return;
-          }
-        }
-
-        const nomeMusica = text.replace(/^!(pedir|pedido)\s+/i, "").trim();
-        
-        if (!nomeMusica) {
-          alert("Digite o nome da música após o comando. Ex: !pedir Snap - Rhythm is a Dancer");
-          return;
-        }
-
-        push(ref(database, 'pedidos_bot'), {
-          uid: user.uid,
-          nomeOuvinte: sanitizarTexto(user.displayName),
-          emailOuvinte: user.email,
-          musicaSolicitada: nomeMusica,
-          status: "pendente",
-          data: new Date().toISOString().split('T')[0],
-          timestamp: new Date().toISOString()
-        });
-
-        alert("Seu pedido foi enviado ao Bot da rádio!");
-      }
-
+      // Publica no nó 'messages' para o bot processar automaticamente
       const message = {
         name: sanitizarTexto(user.displayName),
         email: user.email,

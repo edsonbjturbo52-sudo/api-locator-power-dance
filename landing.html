@@ -4,40 +4,65 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Entrar no Chat</title>
+    <title>Entrar no Chat - Power Dance</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            background: linear-gradient(to right, #17083d84, #0e0b48c6);
+            background: linear-gradient(135deg, #17083d, #0e0b48);
             font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1.main-title {
+            color: goldenrod;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        h2.sub-title {
+            color: azure;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-weight: normal;
         }
 
         .login-box {
             background: white;
-            padding: 40px;
-            border-radius: 10px;
+            padding: 30px 40px;
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(15, 3, 58, 0.383);
-        }
-
-        .login-box h1 {
-            margin-bottom: 20px;
-            color: #0a1b3667;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 100%;
         }
 
         .login-box button {
-            padding: 35px 30px;
-            font-size: 130px; /* Nota: Esse tamanho de fonte está extremamente grande, ajuste se necessário */
-            font-family: Georgia, 'Times New Roman', Times, serif;
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
             color: white;
             background-color: #db4437;
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            transition: background 0.3s ease;
         }
 
         .login-box button:hover {
@@ -49,26 +74,37 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgb(8, 0, 0);
-            padding: 40px;
-            border-radius: 10px;
+            background: #0a0a0c;
+            border: 1px solid #333;
+            padding: 30px;
+            border-radius: 12px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
             display: none;
             z-index: 1000;
+            width: 90%;
+            max-width: 380px;
         }
 
         #popup h2 {
             margin-bottom: 20px;
             color: #005bea;
+            font-size: 1.3rem;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
         }
 
         #popup button {
-            margin: 10px;
-            padding: 10px 20px;
-            font-size: 86px; /* Nota: Também está bem grande */
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 1rem;
+            font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
         }
 
@@ -81,62 +117,33 @@
             background-color: #2196f3;
             color: white;
         }
-
-        h1 {
-            color: goldenrod;
-            display: block;
-            margin-top: -550px;
-            font-size: 80px;
-            position: absolute;
-        }
-
-        .ent {
-            color: azure;
-            margin-top: -350px;
-            position: absolute;
-        }
     </style>
 
-
-
-
-
-
-
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('Service Worker registrado com sucesso!', reg))
-        .catch(err => console.error('Falha ao registrar o Service Worker:', err));
-    });
-  }
-</script>
-
-
-
-
-
-
-
-
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso!', reg))
+                    .catch(err => console.error('Falha ao registrar o Service Worker:', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
-    <h1>Bem-vindo ao Chat</h1>
-    <h1 class="ent">Entrar com</h1>
+    <h1 class="main-title">Bem-vindo ao Chat</h1>
+    <h2 class="sub-title">Entrar com sua conta</h2>
+
     <div class="login-box">
         <button id="loginBtn">Google</button>
     </div>
 
     <div id="popup">
         <h2>Escolha onde deseja entrar</h2>
-        <button id="adminBtn">Admin</button>
-        <button id="muralBtn">Mural</button>
+        <div class="popup-buttons">
+            <button id="adminBtn">Admin</button>
+            <button id="muralBtn">Mural</button>
+        </div>
     </div>
 
     <script type="module">
@@ -159,21 +166,25 @@
         const provider = new GoogleAuthProvider();
         const database = getDatabase(app); 
 
+        // Expõe globalmente para suporte a scripts externos
+        window.auth = auth;
+        window.database = database;
+
         // Evento de Login
         document.getElementById('loginBtn').addEventListener('click', async () => { 
             try { 
                 const result = await signInWithPopup(auth, provider); 
                 const user = result.user; 
                 
-                // Verifica se o UID está na lista de admins 
+                // Verifica se o UID está na nó /admins do Realtime Database
                 const adminRef = ref(database, 'admins/' + user.uid); 
                 const snapshot = await get(adminRef); 
                 
                 if (snapshot.exists()) { 
-                    // Mostrar popup de escolha (admin ou mural) 
+                    // Se for Admin: mostra o popup de seleção
                     document.getElementById('popup').style.display = 'block'; 
                 } else { 
-                    // Usuário comum: ir direto para o mural 
+                    // Usuário comum: redireciona direto para o mural
                     window.location.href = "mm.html"; 
                 } 
             } catch (error) { 
@@ -181,7 +192,7 @@
             } 
         }); 
 
-        // Botões do popup - CORRIGIDO "admin.html" conforme seu projeto
+        // Ações dos botões do modal
         document.getElementById('adminBtn').addEventListener('click', () => { 
             window.location.href = "admin_m.html"; 
         }); 
@@ -192,6 +203,7 @@
     </script>
 
     <script>
+        // Bloqueia clique direito e tecla F12
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
